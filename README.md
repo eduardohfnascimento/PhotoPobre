@@ -1,1 +1,1 @@
-##Trabalho da disciplina de Fundamentos de Processamento de Imagem
+**Trabalho da disciplina de Fundamentos de Processamento de Imagem
