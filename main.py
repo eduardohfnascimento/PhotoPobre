@@ -13,7 +13,7 @@ class ButtonWindow(Gtk.Window):
         self.add(hbox)
 
         button = Gtk.Button.new_with_label("Copiar Imagem")
-        button.connect("clicked", self.on_click_me_clicked)
+        button.connect("clicked", self.on_copy_me_clicked)
         hbox.pack_start(button, True, True, 0)
 
         button = Gtk.Button.new_with_mnemonic("Tons de Cinza")
@@ -32,8 +32,12 @@ class ButtonWindow(Gtk.Window):
         button.connect("clicked", self.on_close_clicked)
         hbox.pack_start(button, True, True, 0)
 
-    def on_click_me_clicked(self, button):
-        print("\"Click me\" button was clicked")
+    def on_copy_me_clicked(self, button):
+        print("\"Copy me\" button was clicked")
+        out = Image.open("Space_187k.jpg")
+        outima = Gtk.Image.new_from_pixbuf(image2pixbuf(out))
+        windows[2].add(outima)
+        windows[2].show_all()
 
     def on_open_clicked(self, button):
         print("\"Open\" button was clicked")
@@ -43,6 +47,11 @@ class ButtonWindow(Gtk.Window):
         Gtk.main_quit()
 
 class MyWindow(Gtk.Window):
+
+    def __init__(self):
+        Gtk.Window.__init__(self, title="PhotoPobre")
+
+class MyWindowCopy(Gtk.Window):
 
     def __init__(self):
         Gtk.Window.__init__(self, title="PhotoPobre")
@@ -60,7 +69,21 @@ def image2pixbuf(im):
 im = Image.open("Space_187k.jpg")#.save("filhocopy.jpg")
 ima = Gtk.Image.new_from_pixbuf(image2pixbuf(im))
 win = MyWindow()
+windows = list()
+windows.append(win)
 win.connect("destroy", Gtk.main_quit)
 win.add(ima)
 win.show_all()
+
+win = ButtonWindow()
+windows.append(win)
+win.connect("destroy", Gtk.main_quit)
+#win.add(ima)
+win.show_all()
+
+win = MyWindowCopy()
+windows.append(win)
+win.connect("destroy", Gtk.main_quit)
+win.show_all()
+
 Gtk.main()
