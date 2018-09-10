@@ -1,11 +1,12 @@
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
+from gi.repository import Gtk, GLib, GdkPixbuf
+from PIL import Image
 
 class ButtonWindow(Gtk.Window):
 
     def __init__(self):
-        Gtk.Window.__init__(self, title="Button Demo")
+        Gtk.Window.__init__(self, title="PhotoPobre")
         self.set_border_width(10)
 
         hbox = Gtk.Box(spacing=6)
@@ -41,7 +42,25 @@ class ButtonWindow(Gtk.Window):
         print("Closing application")
         Gtk.main_quit()
 
-win = ButtonWindow()
+class MyWindow(Gtk.Window):
+
+    def __init__(self):
+        Gtk.Window.__init__(self, title="PhotoPobre")
+
+        
+def image2pixbuf(im):
+    """Convert Pillow image to GdkPixbuf"""
+    data = im.tobytes()
+    w, h = im.size
+    data = GLib.Bytes.new(data)
+    pix = GdkPixbuf.Pixbuf.new_from_bytes(data, GdkPixbuf.Colorspace.RGB,
+            False, 8, w, h, w * 3)
+    return pix
+
+im = Image.open("Space_187k.jpg")#.save("filhocopy.jpg")
+ima = Gtk.Image.new_from_pixbuf(image2pixbuf(im))
+win = MyWindow()
 win.connect("destroy", Gtk.main_quit)
+win.add(ima)
 win.show_all()
 Gtk.main()
