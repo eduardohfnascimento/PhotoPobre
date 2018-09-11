@@ -32,6 +32,10 @@ class ButtonWindow(Gtk.Window):
         button.connect("clicked", self.on_vertical_clicked)
         hbox.pack_start(button, True, True, 0)
 
+        button = Gtk.Button.new_with_mnemonic("Salvar")
+        button.connect("clicked", self.on_save_clicked)
+        hbox.pack_start(button, True, True, 0)
+
         button = Gtk.Button.new_with_mnemonic("Fechar")
         button.connect("clicked", self.on_close_clicked)
         hbox.pack_start(button, True, True, 0)
@@ -79,6 +83,10 @@ class ButtonWindow(Gtk.Window):
                 self.windows[1].remove(row);
             self.windows[1].add(outima)
             self.windows[1].show_all()
+
+    def on_save_clicked(self, button):
+        print("\"Salvar\" button was clicked")
+        self.images[0].save("filhocopy.jpg")
 
     def on_close_clicked(self, button):
         print("Closing application")
