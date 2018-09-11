@@ -2,6 +2,10 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, GdkPixbuf
 from PIL import Image
+import numpy as np
+
+
+out = Image.open("Space_187k.jpg")
 
 class ButtonWindow(Gtk.Window):
 
@@ -21,11 +25,11 @@ class ButtonWindow(Gtk.Window):
         hbox.pack_start(button, True, True, 0)
 
         button = Gtk.Button.new_with_mnemonic("Espelhamento Horizontal")
-        button.connect("clicked", self.on_close_clicked)
+        button.connect("clicked", self.on_horizontal_clicked)
         hbox.pack_start(button, True, True, 0)
 
         button = Gtk.Button.new_with_mnemonic("Espelhamento Vertical")
-        button.connect("clicked", self.on_close_clicked)
+        button.connect("clicked", self.on_vertical_clicked)
         hbox.pack_start(button, True, True, 0)
 
         button = Gtk.Button.new_with_mnemonic("Fechar")
@@ -34,7 +38,8 @@ class ButtonWindow(Gtk.Window):
 
     def on_copy_me_clicked(self, button):
         print("\"Copy me\" button was clicked")
-        out = Image.open("Space_187k.jpg")
+        for row in windows[2].get_children():
+            windows[2].remove(row);
         outima = Gtk.Image.new_from_pixbuf(image2pixbuf(out))
         print (outima)
         windows[2].add(outima)
@@ -42,10 +47,34 @@ class ButtonWindow(Gtk.Window):
 
     def on_tons_clicked(self, button):
         print("\"Tons\" button was clicked")
-        if (windows[2].get_children() > 0):
-            im = Image.open("Space_187k.jpg")#.convert("L")
-            out = im.transpose(Image.FLIP_LEFT_RIGHT)
-            outima = Gtk.Image.new_from_pixbuf(image2pixbuf(out))
+        if (len(windows[2].get_children())):
+            images[0] = images[0].convert("L")
+            images[0]=np.array(images[0])
+            imRGB = np.repeat(images[0][:, :, np.newaxis], 3, axis=2)
+            images[0] = Image.fromarray(imRGB)
+            outima = Gtk.Image.new_from_pixbuf(image2pixbuf(images[0]))
+            for row in windows[2].get_children():
+                windows[2].remove(row);
+            windows[2].add(outima)
+            windows[2].show_all()
+
+    def on_horizontal_clicked(self, button):
+        print("\"Horizontal\" button was clicked")
+        if (len(windows[2].get_children())):
+            #im = Image.open("Space_187k.jpg")
+            images[0] = images[0].transpose(Image.FLIP_LEFT_RIGHT)
+            outima = Gtk.Image.new_from_pixbuf(image2pixbuf(images[0]))
+            for row in windows[2].get_children():
+                windows[2].remove(row);
+            windows[2].add(outima)
+            windows[2].show_all()
+
+    def on_vertical_clicked(self, button):
+        print("\"Vertical\" button was clicked")
+        if (len(windows[2].get_children())):
+            #im = Image.open("Space_187k.jpg")
+            images[0] = images[0].transpose(Image.FLIP_TOP_BOTTOM)
+            outima = Gtk.Image.new_from_pixbuf(image2pixbuf(images[0]))
             for row in windows[2].get_children():
                 windows[2].remove(row);
             windows[2].add(outima)
@@ -76,9 +105,12 @@ def image2pixbuf(im):
     return pix
 
 im = Image.open("Space_187k.jpg")#.save("filhocopy.jpg")
+
 ima = Gtk.Image.new_from_pixbuf(image2pixbuf(im))
 win = MyWindow()
 windows = list()
+images = list()
+images.append(im)
 windows.append(win)
 win.connect("destroy", Gtk.main_quit)
 win.add(ima)
