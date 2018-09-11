@@ -44,6 +44,7 @@ class ButtonWindow(Gtk.Window):
         print("\"Copy me\" button was clicked")
         for row in self.windows[1].get_children():
             self.windows[1].remove(row);
+
         self.images[0] = self.images[1]
         outima = Gtk.Image.new_from_pixbuf(image2pixbuf(self.images[0]))
         self.windows[1].add(outima)
@@ -52,35 +53,33 @@ class ButtonWindow(Gtk.Window):
     def on_tons_clicked(self, button):
         print("\"Tons\" button was clicked")
         if (len(self.windows[1].get_children())):
-            self.images[0] = self.images[0].convert("L")
-            self.images[0]=np.array(self.images[0])
-            imRGB = np.repeat(self.images[0][:, :, np.newaxis], 3, axis=2)
-            self.images[0] = Image.fromarray(imRGB)
+            self.images[0] = imageL2imageRGB(self.images[0])
             outima = Gtk.Image.new_from_pixbuf(image2pixbuf(self.images[0]))
             for row in self.windows[1].get_children():
-                self.windows[1].remove(row);
+                self.windows[1].remove(row)
+
             self.windows[1].add(outima)
             self.windows[1].show_all()
 
     def on_horizontal_clicked(self, button):
         print("\"Horizontal\" button was clicked")
         if (len(self.windows[1].get_children())):
-            #im = Image.open("Space_187k.jpg")
             self.images[0] = self.images[0].transpose(Image.FLIP_LEFT_RIGHT)
             outima = Gtk.Image.new_from_pixbuf(image2pixbuf(self.images[0]))
             for row in self.windows[1].get_children():
-                self.windows[1].remove(row);
+                self.windows[1].remove(row)
+
             self.windows[1].add(outima)
             self.windows[1].show_all()
 
     def on_vertical_clicked(self, button):
         print("\"Vertical\" button was clicked")
         if (len(self.windows[1].get_children())):
-            #im = Image.open("Space_187k.jpg")
             self.images[0] = self.images[0].transpose(Image.FLIP_TOP_BOTTOM)
             outima = Gtk.Image.new_from_pixbuf(image2pixbuf(self.images[0]))
             for row in self.windows[1].get_children():
-                self.windows[1].remove(row);
+                self.windows[1].remove(row)
+
             self.windows[1].add(outima)
             self.windows[1].show_all()
 
@@ -110,3 +109,9 @@ def image2pixbuf(im):
     pix = GdkPixbuf.Pixbuf.new_from_bytes(data, GdkPixbuf.Colorspace.RGB,
             False, 8, w, h, w * 3)
     return pix
+
+def imageL2imageRGB(im):
+    im = im.convert("L")
+    im=np.array(im)
+    imRGB = np.repeat(im[:, :, np.newaxis], 3, axis=2)
+    return Image.fromarray(imRGB)

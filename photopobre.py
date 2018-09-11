@@ -1,6 +1,7 @@
 import window
 
 class PhotoPobre():
+    
     def run(self):
         windows = list()
         images = list()
