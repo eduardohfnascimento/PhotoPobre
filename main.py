@@ -17,7 +17,7 @@ class ButtonWindow(Gtk.Window):
         hbox.pack_start(button, True, True, 0)
 
         button = Gtk.Button.new_with_mnemonic("Tons de Cinza")
-        button.connect("clicked", self.on_open_clicked)
+        button.connect("clicked", self.on_tons_clicked)
         hbox.pack_start(button, True, True, 0)
 
         button = Gtk.Button.new_with_mnemonic("Espelhamento Horizontal")
@@ -36,11 +36,20 @@ class ButtonWindow(Gtk.Window):
         print("\"Copy me\" button was clicked")
         out = Image.open("Space_187k.jpg")
         outima = Gtk.Image.new_from_pixbuf(image2pixbuf(out))
+        print (outima)
         windows[2].add(outima)
         windows[2].show_all()
 
-    def on_open_clicked(self, button):
-        print("\"Open\" button was clicked")
+    def on_tons_clicked(self, button):
+        print("\"Tons\" button was clicked")
+        if (windows[2].get_children() > 0):
+            im = Image.open("Space_187k.jpg")#.convert("L")
+            out = im.transpose(Image.FLIP_LEFT_RIGHT)
+            outima = Gtk.Image.new_from_pixbuf(image2pixbuf(out))
+            for row in windows[2].get_children():
+                windows[2].remove(row);
+            windows[2].add(outima)
+            windows[2].show_all()
 
     def on_close_clicked(self, button):
         print("Closing application")
