@@ -3,6 +3,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, GdkPixbuf
 from PIL import Image
 import numpy as np
+import math
 
 class ButtonWindow(Gtk.Window):
 
@@ -12,7 +13,6 @@ class ButtonWindow(Gtk.Window):
         
         Gtk.Window.__init__(self, title="PhotoPobre")
         self.set_border_width(10)
-        print(len(self.windows))
         hbox = Gtk.Box(spacing=6)
         self.add(hbox)
 
@@ -30,6 +30,10 @@ class ButtonWindow(Gtk.Window):
 
         button = Gtk.Button.new_with_mnemonic("Espelhamento Vertical")
         button.connect("clicked", self.on_vertical_clicked)
+        hbox.pack_start(button, True, True, 0)
+
+        button = Gtk.Button.new_with_mnemonic("Quantizacao")
+        button.connect("clicked", self.on_quantization_clicked)
         hbox.pack_start(button, True, True, 0)
 
         button = Gtk.Button.new_with_mnemonic("Salvar")
@@ -83,6 +87,17 @@ class ButtonWindow(Gtk.Window):
             self.windows[1].add(outima)
             self.windows[1].show_all()
 
+    def on_quantization_clicked(self, button):
+        print("\"Tons\" button was clicked")
+        if (len(self.windows[1].get_children())):
+            self.images[0] = imageL2imageRGBQ(self.images[0])
+            outima = Gtk.Image.new_from_pixbuf(image2pixbuf(self.images[0]))
+            for row in self.windows[1].get_children():
+                self.windows[1].remove(row)
+
+            self.windows[1].add(outima)
+            self.windows[1].show_all()
+
     def on_save_clicked(self, button):
         print("\"Salvar\" button was clicked")
         self.images[0].save("filhocopy.jpg")
@@ -113,5 +128,14 @@ def image2pixbuf(im):
 def imageL2imageRGB(im):
     im = im.convert("L")
     im=np.array(im)
+    imRGB = np.repeat(im[:, :, np.newaxis], 3, axis=2)
+    return Image.fromarray(imRGB)
+
+def imageL2imageRGBQ(im):
+    im = im.convert("L")
+    im=np.array(im)
+    for x in xrange(im.shape[0]):
+        for y in xrange(im.shape[1]):
+            im[x][y] = (im[x][y]/12) * 12
     imRGB = np.repeat(im[:, :, np.newaxis], 3, axis=2)
     return Image.fromarray(imRGB)
