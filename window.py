@@ -4,6 +4,8 @@ from gi.repository import Gtk, GLib, GdkPixbuf
 from PIL import Image
 import numpy as np
 import math
+import matplotlib.pyplot as plt
+import numpy as np
 
 class ButtonWindow(Gtk.Window):
 
@@ -55,15 +57,19 @@ class ButtonWindow(Gtk.Window):
         self.windows[1].show_all()
 
     def on_tons_clicked(self, button):
-        print("\"Tons\" button was clicked")
-        if (len(self.windows[1].get_children())):
-            self.images[0] = imageL2imageRGB(self.images[0])
-            outima = Gtk.Image.new_from_pixbuf(image2pixbuf(self.images[0]))
-            for row in self.windows[1].get_children():
-                self.windows[1].remove(row)
+        # print("\"Tons\" button was clicked")
+        # if (len(self.windows[1].get_children())):
+        #     self.images[0] = imageL2imageRGB(self.images[0])
+        #     outima = Gtk.Image.new_from_pixbuf(image2pixbuf(self.images[0]))
+        #     for row in self.windows[1].get_children():
+        #         self.windows[1].remove(row)
 
-            self.windows[1].add(outima)
-            self.windows[1].show_all()
+        #     self.windows[1].add(outima)
+        #     self.windows[1].show_all()
+        x = np.random.normal(size = 1000)
+        plt.hist(x, normed=True, bins=30)
+        plt.ylabel('Probability');
+        plt.show()
 
     def on_horizontal_clicked(self, button):
         print("\"Horizontal\" button was clicked")
