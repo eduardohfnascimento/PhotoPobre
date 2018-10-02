@@ -270,3 +270,4 @@ def ajustarNegativoColorido(im):
     out2 = source[B].point(lambda i: 255 - i)
 
     return Image.merge(im.mode, (mask, out, out2))
+    
