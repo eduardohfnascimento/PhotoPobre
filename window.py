@@ -54,6 +54,18 @@ class ButtonWindow(Gtk.Window):
         button.connect("clicked", self.on_negativo_clicked)
         hbox.pack_start(button, True, True, 0)
 
+        button = Gtk.Button.new_with_mnemonic("Rotacionar a direita")
+        button.connect("clicked", self.on_direita_clicked)
+        hbox.pack_start(button, True, True, 0)
+
+        button = Gtk.Button.new_with_mnemonic("Rotacionar a esquerda")
+        button.connect("clicked", self.on_esquerda_clicked)
+        hbox.pack_start(button, True, True, 0)
+
+        button = Gtk.Button.new_with_mnemonic("filtro")
+        button.connect("clicked", self.on_filtro_clicked)
+        hbox.pack_start(button, True, True, 0)
+
         button = Gtk.Button.new_with_mnemonic("Salvar")
         button.connect("clicked", self.on_save_clicked)
         hbox.pack_start(button, True, True, 0)
@@ -129,9 +141,9 @@ class ButtonWindow(Gtk.Window):
         if(self.images[0].mode == 'RGB'):
             self.images[0] = ajustarBrilhoColorido(self.images[0])
         else:
-            im = self.images[0].convert("L")
-            im=np.array(im)
-            im = ajustarBrilho(im)
+            self.images[0] = self.images[0].convert("L")
+            self.images[0] = np.array(self.images[0])
+            self.images[0] = ajustarBrilho(self.images[0])
 
         outima = Gtk.Image.new_from_pixbuf(image2pixbuf(self.images[0]))
         for row in self.windows[1].get_children():
@@ -145,9 +157,9 @@ class ButtonWindow(Gtk.Window):
         if(self.images[0].mode == 'RGB'):
             self.images[0] = ajustarContrasteColorido(self.images[0])
         else:
-            im = self.images[0].convert("L")
-            im=np.array(im)
-            im = ajustarContraste(im)
+            self.images[0] = self.images[0].convert("L")
+            self.images[0]=np.array(self.images[0])
+            self.images[0] = ajustarContraste(self.images[0])
 
         outima = Gtk.Image.new_from_pixbuf(image2pixbuf(self.images[0]))
         for row in self.windows[1].get_children():
@@ -161,9 +173,31 @@ class ButtonWindow(Gtk.Window):
         if(self.images[0].mode == 'RGB'):
             self.images[0] = ajustarNegativoColorido(self.images[0])
         else:
-            im = self.images[0].convert("L")
-            im=np.array(im)
-            im = ajustarNegativo(im)
+            self.images[0] = self.images[0].convert("L")
+            self.images[0]=np.array(self.images[0])
+            self.images[0] = ajustarNegativo(self.images[0])
+
+        outima = Gtk.Image.new_from_pixbuf(image2pixbuf(self.images[0]))
+        for row in self.windows[1].get_children():
+            self.windows[1].remove(row)
+
+        self.windows[1].add(outima)
+        self.windows[1].show_all()
+
+    def on_direita_clicked(self, button):
+        print("\"Direita\" button was clicked")
+        self.images[0] = self.images[0].transpose(Image.ROTATE_270)
+
+        outima = Gtk.Image.new_from_pixbuf(image2pixbuf(self.images[0]))
+        for row in self.windows[1].get_children():
+            self.windows[1].remove(row)
+
+        self.windows[1].add(outima)
+        self.windows[1].show_all()
+
+    def on_esquerda_clicked(self, button):
+        print("\"Esquerda\" button was clicked")
+        self.images[0] = self.images[0].transpose(Image.ROTATE_90)
 
         outima = Gtk.Image.new_from_pixbuf(image2pixbuf(self.images[0]))
         for row in self.windows[1].get_children():
@@ -174,7 +208,7 @@ class ButtonWindow(Gtk.Window):
 
     def on_save_clicked(self, button):
         print("\"Salvar\" button was clicked")
-        self.images[0].save("filhocopy.jpg")
+        self.images[0].save("copy.jpg")
 
     def on_close_clicked(self, button):
         print("Closing application")
@@ -270,4 +304,3 @@ def ajustarNegativoColorido(im):
     out2 = source[B].point(lambda i: 255 - i)
 
     return Image.merge(im.mode, (mask, out, out2))
-    
