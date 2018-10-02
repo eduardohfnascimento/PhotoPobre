@@ -1,7 +1,7 @@
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, GdkPixbuf
-from PIL import Image
+from PIL import Image, ImageEnhance
 import numpy as np
 import math
 import matplotlib.pyplot as plt
@@ -38,6 +38,22 @@ class ButtonWindow(Gtk.Window):
         button.connect("clicked", self.on_quantization_clicked)
         hbox.pack_start(button, True, True, 0)
 
+        button = Gtk.Button.new_with_mnemonic("Histograma")
+        button.connect("clicked", self.on_histogram_clicked)
+        hbox.pack_start(button, True, True, 0)
+
+        button = Gtk.Button.new_with_mnemonic("Ajustar Brilho")
+        button.connect("clicked", self.on_brilho_clicked)
+        hbox.pack_start(button, True, True, 0)
+
+        button = Gtk.Button.new_with_mnemonic("Ajustar Contraste")
+        button.connect("clicked", self.on_contraste_clicked)
+        hbox.pack_start(button, True, True, 0)
+
+        button = Gtk.Button.new_with_mnemonic("Ajustar negativo")
+        button.connect("clicked", self.on_negativo_clicked)
+        hbox.pack_start(button, True, True, 0)
+
         button = Gtk.Button.new_with_mnemonic("Salvar")
         button.connect("clicked", self.on_save_clicked)
         hbox.pack_start(button, True, True, 0)
@@ -57,19 +73,15 @@ class ButtonWindow(Gtk.Window):
         self.windows[1].show_all()
 
     def on_tons_clicked(self, button):
-        # print("\"Tons\" button was clicked")
-        # if (len(self.windows[1].get_children())):
-        #     self.images[0] = imageL2imageRGB(self.images[0])
-        #     outima = Gtk.Image.new_from_pixbuf(image2pixbuf(self.images[0]))
-        #     for row in self.windows[1].get_children():
-        #         self.windows[1].remove(row)
+        print("\"Tons\" button was clicked")
+        if (len(self.windows[1].get_children())):
+            self.images[0] = imageL2imageRGB(self.images[0])
+            outima = Gtk.Image.new_from_pixbuf(image2pixbuf(self.images[0]))
+            for row in self.windows[1].get_children():
+                self.windows[1].remove(row)
 
-        #     self.windows[1].add(outima)
-        #     self.windows[1].show_all()
-        x = np.random.normal(size = 1000)
-        plt.hist(x, normed=True, bins=30)
-        plt.ylabel('Probability');
-        plt.show()
+            self.windows[1].add(outima)
+            self.windows[1].show_all()
 
     def on_horizontal_clicked(self, button):
         print("\"Horizontal\" button was clicked")
@@ -103,6 +115,62 @@ class ButtonWindow(Gtk.Window):
 
             self.windows[1].add(outima)
             self.windows[1].show_all()
+
+    def on_histogram_clicked(self, button):
+        print("\"Histogram\" button was clicked")
+        if (len(self.windows[1].get_children())):
+            im=np.asarray(self.images[0].convert('L'))
+            plt.hist(im.flatten(),normed=True, bins = 100) 
+            plt.ylabel('Histogram');
+            plt.show()
+
+    def on_brilho_clicked(self, button):
+        print("\"Brilho\" button was clicked")
+        if(self.images[0].mode == 'RGB'):
+            self.images[0] = ajustarBrilhoColorido(self.images[0])
+        else:
+            im = self.images[0].convert("L")
+            im=np.array(im)
+            im = ajustarBrilho(im)
+
+        outima = Gtk.Image.new_from_pixbuf(image2pixbuf(self.images[0]))
+        for row in self.windows[1].get_children():
+            self.windows[1].remove(row)
+
+        self.windows[1].add(outima)
+        self.windows[1].show_all()
+
+    def on_contraste_clicked(self, button):
+        print("\"Contraste\" button was clicked")
+        if(self.images[0].mode == 'RGB'):
+            self.images[0] = ajustarContrasteColorido(self.images[0])
+        else:
+            im = self.images[0].convert("L")
+            im=np.array(im)
+            im = ajustarContraste(im)
+
+        outima = Gtk.Image.new_from_pixbuf(image2pixbuf(self.images[0]))
+        for row in self.windows[1].get_children():
+            self.windows[1].remove(row)
+
+        self.windows[1].add(outima)
+        self.windows[1].show_all()
+    
+    def on_negativo_clicked(self, button):
+        print("\"Contraste\" button was clicked")
+        if(self.images[0].mode == 'RGB'):
+            self.images[0] = ajustarNegativoColorido(self.images[0])
+        else:
+            im = self.images[0].convert("L")
+            im=np.array(im)
+            im = ajustarNegativo(im)
+
+        outima = Gtk.Image.new_from_pixbuf(image2pixbuf(self.images[0]))
+        for row in self.windows[1].get_children():
+            self.windows[1].remove(row)
+
+        self.windows[1].add(outima)
+        self.windows[1].show_all()
 
     def on_save_clicked(self, button):
         print("\"Salvar\" button was clicked")
@@ -145,3 +213,60 @@ def imageL2imageRGBQ(im):
             im[x][y] = (im[x][y]/12) * 12
     imRGB = np.repeat(im[:, :, np.newaxis], 3, axis=2)
     return Image.fromarray(imRGB)
+
+def ajustarBrilho(arr):
+    for x in xrange(arr.shape[0]):
+        for y in xrange(arr.shape[1]):
+            arr[x][y] = arr[x][y] + 20
+            if (arr[x][y] > 255):
+                arr[x][y] = 255
+    imRGB = np.repeat(arr[:, :, np.newaxis], 3, axis=2)
+    return Image.fromarray(imRGB)
+
+def ajustarBrilhoColorido(im):
+    source = im.split()
+    R, G, B = 0, 1, 2
+
+    mask = source[R].point(lambda i: i +20)
+    out = source[G].point(lambda i: i +20)
+    out2 = source[B].point(lambda i: i +20)
+
+    return Image.merge(im.mode, (mask, out, out2))
+
+def ajustarContraste(arr):
+    for x in xrange(arr.shape[0]):
+        for y in xrange(arr.shape[1]):
+            arr[x][y] = arr[x][y] * 4
+            if (arr[x][y] > 255):
+                arr[x][y] = 255
+    imRGB = np.repeat(arr[:, :, np.newaxis], 3, axis=2)
+    return Image.fromarray(imRGB)
+
+def ajustarContrasteColorido(im):
+    source = im.split()
+    R, G, B = 0, 1, 2
+
+    mask = source[R].point(lambda i: i *4)
+    out = source[G].point(lambda i: i *4)
+    out2 = source[B].point(lambda i: i *4)
+
+    return Image.merge(im.mode, (mask, out, out2))
+
+def ajustarNegativo(arr):
+    for x in xrange(arr.shape[0]):
+        for y in xrange(arr.shape[1]):
+            arr[x][y] = 255 - arr[x][y]
+            if (arr[x][y] > 255):
+                arr[x][y] = 255
+    imRGB = np.repeat(arr[:, :, np.newaxis], 3, axis=2)
+    return Image.fromarray(imRGB)
+
+def ajustarNegativoColorido(im):
+    source = im.split()
+    R, G, B = 0, 1, 2
+
+    mask = source[R].point(lambda i: 255 - i)
+    out = source[G].point(lambda i: 255 - i)
+    out2 = source[B].point(lambda i: 255 - i)
+
+    return Image.merge(im.mode, (mask, out, out2))
