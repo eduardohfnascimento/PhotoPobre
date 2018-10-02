@@ -6,6 +6,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy import ndimage
 
 class ButtonWindow(Gtk.Window):
 
@@ -206,6 +207,18 @@ class ButtonWindow(Gtk.Window):
         self.windows[1].add(outima)
         self.windows[1].show_all()
 
+    def on_filtro_clicked(self, button):
+        print("\"Filtro\" button was clicked")
+        filtro = np.array([[0.0625,0.125,0.0625],[0.125,0.25,0.125],[0.0625,0.125,0.0625]])
+        self.images[0] = filtrando(self.images[0],filtro)
+
+        outima = Gtk.Image.new_from_pixbuf(image2pixbuf(self.images[0]))
+        for row in self.windows[1].get_children():
+            self.windows[1].remove(row)
+
+        self.windows[1].add(outima)
+        self.windows[1].show_all()
+
     def on_save_clicked(self, button):
         print("\"Salvar\" button was clicked")
         self.images[0].save("copy.jpg")
@@ -304,3 +317,10 @@ def ajustarNegativoColorido(im):
     out2 = source[B].point(lambda i: 255 - i)
 
     return Image.merge(im.mode, (mask, out, out2))
+
+def filtrando(im, arr):
+    im = im.convert("L")
+    im=np.array(im)
+    im=ndimage.convolve(im, arr)
+    imRGB = np.repeat(im[:, :, np.newaxis], 3, axis=2)
+    return Image.fromarray(imRGB)
