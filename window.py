@@ -209,7 +209,13 @@ class ButtonWindow(Gtk.Window):
 
     def on_filtro_clicked(self, button):
         print("\"Filtro\" button was clicked")
-        filtro = np.array([[0.0625,0.125,0.0625],[0.125,0.25,0.125],[0.0625,0.125,0.0625]])
+        user_input = input('Enter Three Digits:' ).split(',')
+        D = [int(x) for x in user_input]
+        user_input = input('Enter Three Digits:' ).split(',')
+        E = [int(x) for x in user_input]
+        user_input = input('Enter Three Digits:' ).split(',')
+        F = [int(x) for x in user_input]
+        filtro = np.array([D,E,F])
         self.images[0] = filtrando(self.images[0],filtro)
 
         outima = Gtk.Image.new_from_pixbuf(image2pixbuf(self.images[0]))
